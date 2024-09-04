@@ -7,13 +7,13 @@ export async function login() {
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ 
-    width: 1200, 
+  await page.setViewport({
+    width: 1200,
     height: 800,
     deviceScaleFactor: 1,
-    isMobile: false 
+    isMobile: false,
   });
-  
+
   await page.goto("https://www.codewars.com/users/sign_in");
   await page.waitForFunction(
     'document.location.href == "https://www.codewars.com/dashboard"',
@@ -24,5 +24,3 @@ export async function login() {
 
   await browser.close();
 }
-
-login();
