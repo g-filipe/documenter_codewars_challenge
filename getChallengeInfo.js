@@ -19,12 +19,7 @@ export async function getChallengeInfo(url) {
 
   const solution = await getElementContent(page, "pre.p-2 code");
 
-  await page.waitForFunction(
-    () =>
-      document
-        .querySelector("#fixture_container")
-        ?.textContent?.match(/DB\[:([^\]]*)\]/)?.[1]
-  );
+  await sleep(1500)
 
   const sampleTests = await page.evaluate(() =>
     [
@@ -48,7 +43,7 @@ export async function getChallengeInfo(url) {
 }
 
 async function getElementContent(page, selector) {
-  await page.waitForSelector(selector, { timeout: 3000000 });
+  await page.waitForSelector(selector);
 
   const element = await page.$(selector);
 
@@ -61,4 +56,8 @@ async function getElementInnerHtml(page, selector) {
   const element = await page.$(selector);
 
   return await page.evaluate((el) => el.innerHTML, element);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
