@@ -1,6 +1,6 @@
-import handlebars from "handlebars";
 import fs from "fs";
 import "dotenv/config";
+import { generateFromTemplate } from "./template.js";
 
 const foldersExcludes = [".git", ".idea"];
 
@@ -50,14 +50,9 @@ export function generateMainReadme() {
     console.error("Erro ao ler a pasta:", err);
   }
 
-  const source = fs.readFileSync("templates/mainReadme.hbs").toString();
-  const template = handlebars.compile(source);
-
-  const data = {
+  const readme = generateFromTemplate('mainReadme.hbs', {
     challenges,
-  };
-
-  const readme = template(data);
+  })
 
   fs.writeFileSync(`${projectDir}/README.md`, readme);
 }

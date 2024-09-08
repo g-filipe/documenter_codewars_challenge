@@ -1,11 +1,7 @@
-import puppeteer from "puppeteer";
+import { getBrowserPage } from "./browser.js";
 
 export async function getChallengeInfo(url) {
-  const browser = await puppeteer.launch({
-    headless: false,
-    userDataDir: "session",
-  });
-  const page = await browser.newPage();
+  const page = await getBrowserPage();
 
   await page.goto(url);
 
@@ -19,7 +15,7 @@ export async function getChallengeInfo(url) {
 
   const solution = await getElementContent(page, "pre.p-2 code");
 
-  await sleep(1500)
+  await sleep(1500);
 
   const sampleTests = await page.evaluate(() =>
     [
@@ -30,8 +26,6 @@ export async function getChallengeInfo(url) {
       .map((line) => line.textContent)
       .join("\n")
   );
-
-  await browser.close();
 
   return {
     title,

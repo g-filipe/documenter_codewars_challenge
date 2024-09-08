@@ -1,22 +1,17 @@
-import puppeteer from "puppeteer";
+import { getBrowserPage } from "./browser.js";
 
 export async function getChallengesLinksFromList(url) {
-  const browser = await puppeteer.launch({
-    headless: false,
-  });
-  const page = await browser.newPage();
+  const page = await getBrowserPage();
 
   await page.goto(url);
 
   await page.waitForSelector(".list-item-kata a.ml-2");
 
-  await page.evaluate(loadPage);
+  await page.evaluate(scrollChallengesPage);
 
   await page.waitForFunction('window.finishLoadingChallenges')
 
   const challenges = await getChallengesLinks(page, ".list-item-kata a.ml-2");
-
-  await browser.close();
 
   return challenges;
 }
@@ -29,7 +24,7 @@ async function getChallengesLinks(page, selector) {
   return links;
 }
 
-function loadPage() {
+function scrollChallengesPage() {
   const interval = setInterval(() => {
     const totalKatasFoundByFiltering = parseInt(
       document.querySelector(".text-ui-text div").textContent.split(" ")[0]

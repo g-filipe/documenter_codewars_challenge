@@ -1,12 +1,13 @@
 import { execSync } from "child_process";
-import { writeFileSync, existsSync } from "fs";
+import { writeFileSync } from "fs";
 import sanitizeFilename from "sanitize-filename";
+import { blue } from "yoctocolors";
 import { getChallengeInfo } from "./getChallengeInfo.js";
-import { generateChallengeReadme } from "./generateChallengeReadme.js";
+import { generateFromTemplate } from "./template.js";
 
 export async function documenter(url) {
   const challengeInfo = await getChallengeInfo(url);
-  const challengeReadme = generateChallengeReadme(challengeInfo);
+  const challengeReadme = generateFromTemplate('challengeReadme.hbs', challengeInfo)
   const projectDir = process.env.PROJECT_DIR_PATH;
 
   const challengeFolderName = sanitizeFilename(challengeInfo.title, {
@@ -24,17 +25,16 @@ export async function documenter(url) {
 
   const challengePath = `${projectDir}/${difficultyFolderName}/${challengeFolderName}`;
 
-  if (existsSync(challengePath)) {
-    return;
-  }
-
   try {
     execSync(`mkdir -p ${challengePath}`);
-    console.log(`Pasta ${challengeFolderName} criada com sucesso!`);
   } catch (error) {
-    console.error(`Erro ao criar a pasta ${challengePath}:`, error);
+    console.error(`Error creating folder ${challengePath}:`, error);
   }
 
   writeFileSync(`${challengePath}/README.md`, challengeReadme);
   writeFileSync(`${challengePath}/solution.sql`, challengeInfo.solution);
+
+  console.log(
+    `Challenge ${blue(challengeInfo.title)} documented successfully!`
+  );
 }
