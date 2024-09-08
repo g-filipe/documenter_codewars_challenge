@@ -1,18 +1,16 @@
 import puppeteer from "puppeteer";
 
 export async function login() {
+  console.log("Logging in... ");
+
   const browser = await puppeteer.launch({
     headless: false,
     userDataDir: "session",
+    defaultViewport: null,
+    args: ["--hide-crash-restore-bubble"],
   });
 
-  const page = await browser.newPage();
-  await page.setViewport({
-    width: 1200,
-    height: 800,
-    deviceScaleFactor: 1,
-    isMobile: false,
-  });
+  const page = (await browser.pages())[0];
 
   await page.goto("https://www.codewars.com/users/sign_in");
   await page.waitForFunction(
@@ -23,4 +21,6 @@ export async function login() {
   );
 
   await browser.close();
+
+  console.log("Logged in successfully!");
 }
