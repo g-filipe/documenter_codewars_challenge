@@ -2,6 +2,7 @@ import "dotenv/config";
 import { login } from "./login.js";
 import { getChallengesLinksFromList } from "./getChallengesLinksFromList.js";
 import { documenter } from "./documenter.js";
+import { generateMainReadme } from "./generateMainReadme.js";
 
 await login();
 
@@ -15,3 +16,5 @@ for (const url of urls) {
   count++
   console.log(`Challenges: ${count} / ${urls.length}`)
 }
+
+generateMainReadme();

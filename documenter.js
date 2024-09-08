@@ -2,11 +2,11 @@ import { execSync } from "child_process";
 import { writeFileSync, existsSync } from "fs";
 import sanitizeFilename from "sanitize-filename";
 import { getChallengeInfo } from "./getChallengeInfo.js";
-import { createChallengeReadme } from "./createChallengeReadme.js";
+import { generateChallengeReadme } from "./generateChallengeReadme.js";
 
 export async function documenter(url) {
   const challengeInfo = await getChallengeInfo(url);
-  const challengeReadme = createChallengeReadme(challengeInfo);
+  const challengeReadme = generateChallengeReadme(challengeInfo);
   const projectDir = process.env.PROJECT_DIR_PATH;
 
   const challengeFolderName = sanitizeFilename(challengeInfo.title, {

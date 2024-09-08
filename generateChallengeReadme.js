@@ -1,4 +1,4 @@
-export function createChallengeReadme(challengeInfo) {
+export function generateChallengeReadme(challengeInfo) {
   return `## ${challengeInfo.title}
 ### Difficulty: ${challengeInfo.difficulty}
 <br>
