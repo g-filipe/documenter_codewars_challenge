@@ -1,6 +1,8 @@
 import { getBrowserPage } from "./browser.js";
 
 export async function getChallengesLinksFromList(url) {
+  console.log('Retrieving challenge list...');
+
   const page = await getBrowserPage();
 
   await page.goto(url);
@@ -12,6 +14,8 @@ export async function getChallengesLinksFromList(url) {
   await page.waitForFunction('window.finishLoadingChallenges')
 
   const challenges = await getChallengesLinks(page, ".list-item-kata a.ml-2");
+
+  console.log('Challenge list retrieved successfully!');
 
   return challenges;
 }
