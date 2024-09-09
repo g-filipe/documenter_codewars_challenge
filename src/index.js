@@ -8,7 +8,7 @@ import { closeBrowser } from "./browser.js";
 await login();
 
 const urls = await getChallengesLinksFromList(
-  "https://www.codewars.com/kata/search/sql?q=&r%5B%5D=-8&xids=not_completed&beta=false&order_by=sort_date%20desc"
+  process.env.CHALLENGES_LIST_URL
 );
 
 let count = 0;
