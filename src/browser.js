@@ -7,7 +7,7 @@ export async function getBrowserPage() {
 
   if (!browser) {
     browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       userDataDir: "session",
     });
   }

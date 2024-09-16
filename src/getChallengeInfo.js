@@ -1,3 +1,4 @@
+import { yellow } from "yoctocolors";
 import { getBrowserPage } from "./browser.js";
 
 export async function getChallengeInfo(url) {
@@ -13,9 +14,34 @@ export async function getChallengeInfo(url) {
 
   await page.evaluate('document.querySelector("#replay_btn").click()');
 
-  const solution = await getElementContent(page, "pre.p-2 code");
+  await page.waitForSelector("pre[lang]");
 
-  await sleep(1500);
+  const submissionList = await page.evaluate(() => {
+    const solutionsByLanguages = [
+      ...document.querySelectorAll("pre[lang]"),
+    ].reduce((acc, pre) => {
+      const lang =
+        pre.parentElement.parentElement.querySelector("p").textContent;
+      const solution = pre.textContent;
+      const langObj = acc.find((x) => x.lang == lang);
+      if (!langObj) {
+        acc.push({
+          lang,
+          solutions: [solution],
+        });
+      } else {
+        langObj.solutions.push(solution);
+      }
+      return acc;
+    }, []);
+
+    return solutionsByLanguages.map(({ lang, solutions }) => ({
+      lang,
+      solution: solutions[solutions.length - 1],
+    }));
+  });
+
+  await sleep(2000);
 
   const sampleTests = await page.evaluate(() =>
     [
@@ -31,7 +57,7 @@ export async function getChallengeInfo(url) {
     title,
     difficulty,
     description,
-    solution,
+    submissionList,
     sampleTests,
   };
 }
