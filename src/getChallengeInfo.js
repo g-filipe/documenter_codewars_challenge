@@ -1,4 +1,3 @@
-import { yellow } from "yoctocolors";
 import { getBrowserPage } from "./browser.js";
 
 export async function getChallengeInfo(url) {
@@ -8,7 +7,7 @@ export async function getChallengeInfo(url) {
 
   const title = await getElementContent(page, "h4.ml-2");
 
-  const difficulty = await getElementContent(page, ".inner-small-hex span");
+  const difficulty = await getElementContent(page, ".rounded-lg .inner-small-hex span");
 
   const description = await getElementInnerHtml(page, "#description");
 

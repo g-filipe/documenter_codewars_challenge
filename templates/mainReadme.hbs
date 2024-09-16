@@ -10,28 +10,33 @@
 
 <div style="display:flex; align-items:center;" >
     <img src="https://www.codewars.com/packs/assets/logo.f607a0fb.svg" width="3%"/>
-    <a href="https://www.codewars.com/users/g-filipe">&nbsp; Codewars profile</a>
+    <a href="{{codewarsProfile}}">&nbsp; My Codewars profile</a>
 </div>
 
 <br>
 
-<table>
-    <thead>
-    <tr>
+{{#each languageFolders}}
+  <table>
+    <tbody>
+      <th colspan="2">{{lang}}</th>
+      <tr>
         <th>Problem</th>
         <th>Difficulty</th>
-    </tr>
-    </thead>
-    <tbody>
-        {{#each challenges}}
+      </tr>
+      {{#each challenges}}
         <tr>
-            <td>
-                <a href="{{url}}">{{title}}</a>
-            </td>
-            <td>
-                ${\color{ {{~difficultyColor~}} }\text{ {{~difficulty~}} }}$
-            </td>
+          <td>
+            <a href="{{url}}">{{title}}</a>
+          </td>
+          <td>
+            ${\color{
+            {{~difficultyColor~}}
+            }\text{
+            {{~difficulty~}}
+            }}$
+          </td>
         </tr>
-        {{/each}}
+      {{/each}}
     </tbody>
-</table>
+  </table>
+{{/each}}

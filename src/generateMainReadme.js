@@ -1,6 +1,7 @@
 import fs from "fs";
 import "dotenv/config";
 import { generateFromTemplate } from "./template.js";
+import { diffieHellman } from "crypto";
 
 const foldersExcludes = [".git", ".idea"];
 
@@ -18,40 +19,53 @@ const difficultyColorMapping = {
 export function generateMainReadme() {
   const prefix = process.env.REPOSITORY_URL;
   const projectDir = process.env.PROJECT_DIR_PATH;
-  const challenges = [];
+  const languageFolders = [];
 
   try {
-    getDirectories(projectDir).forEach((difficultyDirectoryName) => {
-      getDirectories(`${projectDir}/${difficultyDirectoryName}`).forEach(
-        (directoryName) => {
-          let formattedDirectoryName = directoryName.replaceAll("_", " ");
+    getDirectories(projectDir).forEach((languageDirectoryName) => {
+      
+      const languageFolder = {
+        challenges: [],
+        lang: languageDirectoryName
+      }
 
-          const path = `${projectDir}/${difficultyDirectoryName}/${directoryName}`;
+      languageFolders.push(languageFolder)
 
-          let difficulty;
+      getDirectories(`${projectDir}/${languageDirectoryName}`).forEach((difficultyDirectoryName) => {
 
-          try {
-            difficulty = getDifficulty(`${path}/README.md`);
-          } catch (err) {
-            console.error(err);
-            difficulty = "Unknown";
+        getDirectories(`${projectDir}/${languageDirectoryName}/${difficultyDirectoryName}`).forEach(
+          (directoryName) => {
+            let formattedDirectoryName = directoryName.replaceAll("_", " ");
+  
+            const path = `${projectDir}/${languageDirectoryName}/${difficultyDirectoryName}/${directoryName}`;
+  
+            let difficulty;
+  
+            try {
+              difficulty = getDifficulty(`${path}/README.md`);
+            } catch (err) {
+              console.error(err);
+              difficulty = "Unknown";
+            }
+  
+            languageFolder.challenges.push({
+              title: formattedDirectoryName,
+              url: `${prefix}/${difficultyDirectoryName}/${directoryName}`,
+              difficulty,
+              difficultyColor: difficultyColorMapping[difficulty],
+            });
           }
-
-          challenges.push({
-            title: formattedDirectoryName,
-            url: `${prefix}/${difficultyDirectoryName}/${directoryName}`,
-            difficulty,
-            difficultyColor: difficultyColorMapping[difficulty],
-          });
-        }
-      );
-    });
+        );
+      });
+    })
   } catch (err) {
-    console.error("Erro ao ler a pasta:", err);
+    console.error("Error reading the folder:", err);
   }
 
+  languageFolders.forEach((languageFolder) => languageFolder.challenges.sort((a, b) => b.difficulty.localeCompare(a.difficulty)))
   const readme = generateFromTemplate('mainReadme.hbs', {
-    challenges,
+    languageFolders,
+    codewarsProfile: process.env.CODEWARS_PROFILE
   })
 
   fs.writeFileSync(`${projectDir}/README.md`, readme);
@@ -68,14 +82,14 @@ function getDirectories(directoryPath) {
 
 function getDifficulty(filePath) {
   if (!fs.existsSync(filePath)) {
-    throw `Arquivo não encontrado: ${filePath}`;
+    throw `File not found: ${filePath}`;
   }
 
   const fileContent = fs.readFileSync(filePath);
   const result = fileContent.toString().match(/Difficulty: ([\w ]+)/);
 
   if (!result || !result[1]) {
-    throw `Erro ao extrair a dificuldade no arquivo: ${filePath}`;
+    throw `Error extracting the difficulty in the file: ${filePath}`;
   }
 
   return result[1];
